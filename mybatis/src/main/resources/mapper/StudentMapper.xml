@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ithuangqing.mybatis.dao.StudentDao">
+
+    <!--结果转换映射，一般都会在查询的饿时候使用-->
+    <resultMap id="StudentMap" type="Student">
+        <id property="studentid" column="studentid"/>
+        <result property="studentname" column="studentname"/>
+        <result property="studentclass" column="studentclass"/>
+    </resultMap>
+
+
+    <!-- 目的：为dao接口方法提供sql语句配置 -->
+    <select id="queryById" resultMap="StudentMap" parameterType="integer">
+        <!-- 具体的sql -->
+        SELECT
+        studentid,
+        studentname,
+        studentclass
+        FROM
+        student
+        WHERE
+        studentid = #{id}
+    </select>
+
+    <!--增加-->
+
+    <insert id="insert" parameterType="Student">
+        insert into student(studentname,studentid,studentclass)
+        values (#{studentname},#{studentid},#{studentclass});
+    </insert>
+
+    <!--删除-->
+    <delete id="delete" parameterType="integer">
+        delete from student where studentid = #{studentid};
+    </delete>
+
+    <!--更新-->
+    <update id="updatebyid" parameterType="Student">
+        update student set studentname = #{studentname},studentid=#{studentid},studentclass=#{studentclass}
+        where studentid = #{studentid};
+    </update>
+
+    <!--查询所有-->
+    <select id="selectall" resultMap="StudentMap">
+        select studentname,studentid,studentclass from student
+        ;
+    </select>
+
+
+    <!--根据姓名查找-->
+    <select id="findAllByName" parameterType="Student" resultMap="StudentMap">
+        select studentname,studentid,studentclass from student
+
+        <if test="studentname != null">
+            where studentname = #{studentname}
+        </if>
+
+
+    </select>
+
+    <!--choose的使用-->
+    <select id="findAllByName2" parameterType="Student" resultMap="StudentMap">
+        select studentname,studentid,studentclass from student
+
+        <where>
+           <choose>
+               <when test="studentname != null">
+                   studentname = #{studentname}
+               </when>
+               <when test="studentid != null">
+                   studentid = #{studentid}
+               </when>
+               <otherwise>
+                   studentid = 0
+               </otherwise>
+           </choose>
+        </where>
+    </select>
+
+    <!--foreach的使用-->
+    <select id="findAllByName3" parameterType="integer" resultMap="StudentMap">
+        select studentname,studentid,studentclass from student
+
+          <where>
+              studentid in
+              <foreach collection="array" open="(" close=")" separator="," item="ele">
+                  #{ele}
+              </foreach>
+          </where>
+
+
+    </select>
+
+
+    <!--set使用-->
+    <update id="updatebyid1" parameterType="Student">
+        update student
+
+        <set>
+            <if test="studentname!=null">
+                studentname = #{studentname},
+            </if>
+            <if test="studentclass!=null">
+                studentclass = #{studentclass}
+            </if>
+        </set>
+
+        <where>
+            <if test="studentid!=null">
+                studentid = #{studentid};
+            </if>
+        </where>
+
+
+    </update>
+
+
+</mapper>

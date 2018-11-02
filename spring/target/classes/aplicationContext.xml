@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <!--装配User类-->
+    <bean id="user" class="com.ithuangqing.spring.pojo.User"/>
+
+    <!--AOP-->
+    <!--装配目标-->
+    <bean id="userdao" class="com.ithuangqing.spring.dao.UserDao"/>
+    <!--装配切面-->
+    <bean id="myaspect" class="com.ithuangqing.spring.dao.MyAspect"/>
+    <!--配置切面-->
+    <aop:config>
+        <!--使用表达式配置哪些类的哪些方法需要被增强-->
+        <aop:pointcut id="pointcut1" expression="execution(* com.ithuangqing.spring.dao.UserDao.save())"></aop:pointcut>
+        <!--配置切面-->
+        <aop:aspect ref="myaspect">
+            <!--配置通知-->
+            <aop:before method="doM" pointcut-ref="pointcut1"></aop:before>
+        </aop:aspect>
+    </aop:config>
+
+
+
+    <!--扫描配置包-->
+    <context:component-scan base-package="com.ithuangqing.spring"/>
+
+
+
+</beans>
